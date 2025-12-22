@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History | RichWay Elite</title>
+    
+    <!-- Icons & Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --mint: #00e676;
+            --mint-dark: #00c853;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; padding-bottom: 50px; }
+
+        /* --- NAVIGATION & SIDEBAR --- */
+        header { background: #fff; padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 1000; }
+        .brand { font-size: 1.2rem; font-weight: 800; color: #3498db; }
+        .menu-btn { background: #e0e0e0; padding: 10px; border-radius: 8px; color: var(--mint); cursor: pointer; border: none; }
+
+        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #fff; z-index: 5000; transition: 0.4s; padding: 30px 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
+        .sidebar.active { left: 0; }
+        .side-item { display: flex; align-items: center; gap: 12px; padding: 15px; text-decoration: none; color: #555; font-weight: 600; border-radius: 10px; margin-bottom: 5px; cursor: pointer; }
+        .side-item:hover { background: #f0fff4; color: var(--mint); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 4500; display: none; backdrop-filter: blur(2px); }
+        .overlay.active { display: block; }
+
+        /* --- HISTORY CONTENT --- */
+        .container { max-width: 650px; margin: 30px auto; padding: 0 15px; }
+        .page-title { font-weight: 800; font-size: 1.5rem; margin-bottom: 25px; color: #2d3436; border-left: 5px solid var(--mint); padding-left: 15px; }
+
+        .order-card { background: #fff; border-radius: 15px; border: 1px solid #eee; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.3s; }
+        .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1px solid #f8f9fa; padding-bottom: 10px; }
+        
+        .order-id { font-size: 0.75rem; color: #999; font-weight: bold; }
+        .badge { padding: 6px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+        .pending { background: #fff3e0; color: #ef6c00; }
+        .processing { background: #e3f2fd; color: #1976d2; }
+        .completed { background: #e8f5e9; color: #2e7d32; }
+        .cancelled { background: #ffebee; color: #c62828; }
+
+        .order-details p { font-size: 0.85rem; margin-bottom: 6px; color: #636e72; }
+        .order-link { color: #0984e3; text-decoration: none; word-break: break-all; font-weight: 600; }
+
+        .order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #f8f9fa; }
+        .price { font-weight: 800; color: var(--mint-dark); font-size: 1rem; }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: #b2bec3; }
+        .empty-state i { font-size: 4rem; margin-bottom: 15px; opacity: 0.3; }
+    </style>
+</head>
+<body>
+
+    <!-- OVERLAY & SIDEBAR -->
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <h2 style="color:var(--mint); margin-bottom:30px;">RichWay Menu</h2>
+        <a href="dashboard.html" class="side-item"><i class="fas fa-plus-circle"></i> New Order</a>
+        <a href="history.html" class="side-item" style="background:#f0fff4; color:var(--mint);"><i class="fas fa-history"></i> Order History</a>
+        <a href="balance.html" class="side-item"><i class="fas fa-wallet"></i> Add Balance</a>
+        <div class="side-item" style="color:red; margin-top:50px" onclick="logout()"><i class="fas fa-power-off"></i> Logout</div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="brand">RichWay Elite <i class="fas fa-check-circle"></i></div>
+        <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+    </header>
+
+    <div class="container">
+        <h2 class="page-title">Orders History</h2>
+        
+        <!-- Order List -->
+        <div id="history-container">
+            <p style="text-align: center; color: #999; margin-top: 50px;">Fetching your elite records...</p>
+        </div>
+    </div>
+
+    <!-- FIREBASE MODULES -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // CONFIG (Replace with your same config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA44TLKBn93R8SxgmcVWAjr6wI3SQSTvM0",
+            authDomain: "wasi-smm.firebaseapp.com",
+            projectId: "wasi-smm",
+            storageBucket: "wasi-smm.firebasestorage.app",
+            messagingSenderId: "100481136940",
+            appId: "1:100481136940:web:6dbb01efebc0774957d489"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Sidebar Toggle
+        window.toggleMenu = () => {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // 1. Auth Check
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadUserOrders(user.uid);
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        // 2. Real-time Orders Fetch
+        function loadUserOrders(uid) {
+            const container = document.getElementById('history-container');
+            
+            // Simple query (removed orderBy to avoid index errors initially)
+            const q = query(collection(db, "orders"), where("uid", "==", uid));
+
+            onSnapshot(q, (snapshot) => {
+                if (snapshot.empty) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>You haven't placed any orders yet.</p>
+                            <a href="dashboard.html" style="color:var(--mint); text-decoration:none; font-weight:bold;">Order Now</a>
+                        </div>`;
+                    return;
+                }
+
+                let html = "";
+                snapshot.forEach((doc) => {
+                    const order = doc.data();
+                    const orderID = doc.id.substring(0, 10).toUpperCase();
+                    
+                    html += `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div>
+                                    <h4 style="color:#2d3436; font-size:0.95rem;">${order.serviceName}</h4>
+                                    <span class="order-id">ID: #${orderID}</span>
+                                </div>
+                                <span class="badge ${order.status}">${order.status}</span>
+                            </div>
+                            <div class="order-details">
+                                <p><strong>Target Link:</strong> <a href="${order.link}" target="_blank" class="order-link">${order.link}</a></p>
+                                <p><strong>Quantity:</strong> ${order.quantity}</p>
+                            </div>
+                            <div class="order-footer">
+                                <span class="price">Rs ${order.amountPaid}</span>
+                                <span style="font-size:0.7rem; color:#999;"><i class="fas fa-sync-alt"></i> Real-time</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }, (error) => {
+                console.error("Error loading orders:", error);
+                container.innerHTML = `<p style="color:red; text-align:center;">Permission Denied. Check Firestore Rules.</p>`;
+            });
+        }
+
+        window.logout = () => signOut(auth).then(() => window.location.href="index.html");
+    </script>
+</body>
+</html>

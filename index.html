@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RichWay SMM Elite | Login & Signup</title>
+    
+    <!-- Icons & Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --mint: #00b894;
+            --mint-dark: #009677;
+            --richway-blue: #007bff;
+            --richway-gold: #f39c12;
+            --bg-light: #f8f9fa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; background: #ffffff; color: #333; overflow-x: hidden; padding-top: 60px; }
+
+        /* --- REALISTIC HANGING LIGHTS --- */
+        .lights-wrapper {
+            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+            z-index: 2500; pointer-events: none; display: flex; justify-content: space-around;
+        }
+        .wire-top { position: absolute; top: 0; width: 100%; height: 2px; background: #111; }
+        .bulb-holder {
+            position: relative; width: 20px; height: 50px;
+            animation: swing 3s ease-in-out infinite alternate; transform-origin: top center;
+        }
+        .bulb-holder::before { content: ''; position: absolute; top: 0; left: 50%; width: 1px; height: 30px; background: #222; }
+        .glass {
+            position: absolute; bottom: 0; left: 1px; width: 18px; height: 22px; 
+            border-radius: 50% 50% 45% 45%; border: 0.5px solid rgba(255,255,255,0.4);
+        }
+        .red { background: rgba(255, 0, 0, 0.9); box-shadow: 0 0 15px #ff0000; }
+        .green { background: rgba(0, 255, 136, 0.9); box-shadow: 0 0 15px #00FF88; }
+        .purple { background: rgba(155, 89, 182, 0.9); box-shadow: 0 0 15px #9b59b6; }
+        .yellow { background: rgba(241, 196, 15, 0.9); box-shadow: 0 0 15px #f1c40f; }
+        @keyframes swing { from { transform: rotate(-4deg); } to { transform: rotate(4deg); } }
+
+        /* --- NAVIGATION --- */
+        nav {
+            padding: 15px 8%; background: #fff; border-bottom: 1px solid #eee;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1500;
+        }
+        .logo { font-family: 'Montserrat'; font-size: 1.5rem; font-weight: 800; text-decoration: none; color: #111; }
+        .logo span { color: var(--richway-gold); }
+        .menu-btn { font-size: 1.8rem; cursor: pointer; color: var(--mint); }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed; top: 0; right: -300px; width: 280px; height: 100%;
+            background: #fff; z-index: 3000; transition: 0.4s; padding: 40px 20px;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+        }
+        .sidebar.active { right: 0; }
+        .close-menu { position: absolute; top: 20px; right: 20px; font-size: 2rem; cursor: pointer; color: #888; }
+        .side-link {
+            display: flex; align-items: center; gap: 15px; padding: 15px;
+            text-decoration: none; color: #333; font-weight: 600; border-bottom: 1px solid #f5f5f5;
+        }
+        .side-link i { color: var(--mint); width: 20px; }
+        .side-link:hover { background: #f0fdf9; color: var(--mint); }
+
+        /* --- MAIN WRAPPER --- */
+        .main-wrapper { max-width: 550px; margin: 40px auto; padding: 0 20px; text-align: center; }
+        .marquee-bar { background: #ffeb3b; padding: 8px; font-weight: 800; font-size: 0.8rem; border-radius: 4px; overflow: hidden; white-space: nowrap; margin-bottom: 30px; }
+        .marquee-bar span { display: inline-block; animation: scroll 12s linear infinite; }
+        @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+
+        /* --- AUTH CARD --- */
+        .card { background: #fff; border: 1px solid #ddd; padding: 35px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .card h2 { margin-bottom: 25px; color: var(--mint); font-family: 'Montserrat'; }
+
+        .field { margin-bottom: 20px; text-align: left; }
+        .field label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.85rem; color: #555; }
+        .input-box { position: relative; }
+        .input-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--mint); }
+        .input-box input { width: 100%; padding: 12px 15px 12px 45px; border-radius: 8px; border: 1px solid #ccc; outline: none; background: #fafafa; font-size: 0.95rem; }
+        .input-box input:focus { border-color: var(--mint); background: #fff; }
+
+        .btn-mint { width: 100%; background: var(--mint); color: #fff; padding: 14px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+        .btn-mint:hover { background: var(--mint-dark); transform: translateY(-2px); }
+
+        /* GOOGLE BUTTON */
+        .google-btn {
+            width: 100%; padding: 12px; background: white; border: 1px solid #ddd;
+            border-radius: 8px; display: flex; justify-content: center; align-items: center;
+            gap: 12px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: 0.3s;
+        }
+        .google-btn:hover { background: #f9f9f9; }
+
+        /* --- ROCKET --- */
+        .rocket { margin: 60px auto; width: 50px; height: 80px; background: #eee; border-radius: 50% 50% 10% 10%; position: relative; animation: float 3.2s infinite ease-in-out; border-bottom: 4px solid var(--mint); }
+        .r-fire { width: 15px; height: 35px; background: linear-gradient(orange, transparent); position: absolute; bottom: -30px; left: 18px; border-radius: 50%; animation: flicker 0.2s infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-25px); } }
+        @keyframes flicker { from { opacity: 0.8; } to { opacity: 1; } }
+
+        .hidden { display: none; }
+        .toggle-txt { margin-top: 25px; font-size: 0.9rem; color: #777; }
+        .toggle-txt span { color: var(--mint); font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <!-- REALISTIC LIGHTS -->
+    <div class="lights-wrapper">
+        <div class="wire-top"></div>
+        <div class="bulb-holder"><div class="glass red"></div></div>
+        <div class="bulb-holder"><div class="glass green"></div></div>
+        <div class="bulb-holder"><div class="glass purple"></div></div>
+        <div class="bulb-holder"><div class="glass yellow"></div></div>
+        <div class="bulb-holder"><div class="glass red"></div></div>
+        <div class="bulb-holder"><div class="glass green"></div></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav>
+        <a href="index.html" class="logo">RichWay <span>SMM Elite</span></a>
+        <div class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+    </nav>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <span class="close-menu" onclick="toggleMenu()">&times;</span>
+        <a href="javascript:void(0)" class="side-link" onclick="handleMenu('login')"><i class="fas fa-sign-in-alt"></i> Login Now</a>
+        <a href="javascript:void(0)" class="side-link" onclick="handleMenu('signup')"><i class="fas fa-user-plus"></i> Create Account</a>
+        <a href="#" class="side-link"><i class="fas fa-boxes"></i> Our Services</a>
+        <a href="#" class="side-link"><i class="fas fa-shield-alt"></i> Terms & Policy</a>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="marquee-bar"><span>Welcome to RichWay SMM Elite • 24/7 Live Support Active • Instant Deposits Enabled •</span></div>
+
+        <!-- LOGIN FORM -->
+        <div class="card" id="login-box">
+            <h2>Welcome Back</h2>
+            <div class="field">
+                <label>Email Address</label>
+                <div class="input-box">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="lemail" placeholder="email@example.com">
+                </div>
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <div class="input-box">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="lpass" placeholder="••••••••">
+                </div>
+            </div>
+            <button class="btn-mint" onclick="login()">SECURE LOGIN</button>
+            
+            <button class="google-btn" onclick="loginWithGoogle()">
+                <i class="fab fa-google" style="color: #4285F4;"></i> Continue with Google
+            </button>
+
+            <p class="toggle-txt">Don't have an account? <span onclick="toggleAuth('signup')">Create Account</span></p>
+        </div>
+
+        <!-- SIGNUP FORM -->
+        <div class="card hidden" id="signup-box">
+            <h2>Elite Registration</h2>
+            <div style="display:flex; gap:10px;">
+                <div class="field" style="flex:1;"><label>First Name</label><input type="text" id="fname" placeholder="Ali" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;"></div>
+                <div class="field" style="flex:1;"><label>Surname</label><input type="text" id="sname" placeholder="Khan" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px;"></div>
+            </div>
+            <div class="field">
+                <label>WhatsApp Number</label>
+                <div class="input-box"><i class="fab fa-whatsapp"></i><input type="tel" id="whatsapp" placeholder="+92 XXX XXXXXXX"></div>
+            </div>
+            <div class="field">
+                <label>Email Address</label>
+                <div class="input-box"><i class="fas fa-envelope"></i><input type="email" id="semail" placeholder="name@mail.com"></div>
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <div class="input-box"><i class="fas fa-lock"></i><input type="password" id="spass" placeholder="Min 6 characters"></div>
+            </div>
+            <button class="btn-mint" onclick="register()">CREATE ACCOUNT</button>
+            
+            <button class="google-btn" onclick="loginWithGoogle()">
+                <i class="fab fa-google" style="color: #4285F4;"></i> Signup with Google
+            </button>
+
+            <p class="toggle-txt">Already a member? <span onclick="toggleAuth('login')">Login</span></p>
+        </div>
+
+        <!-- CSS ROCKET -->
+        <div class="rocket"><div class="r-fire"></div></div>
+    </div>
+
+    <!-- FIREBASE MODULES -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // YOUR FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyA44TLKBn93R8SxgmcVWAjr6wI3SQSTvM0",
+            authDomain: "wasi-smm.firebaseapp.com",
+            projectId: "wasi-smm",
+            storageBucket: "wasi-smm.firebasestorage.app",
+            messagingSenderId: "100481136940",
+            appId: "1:100481136940:web:6dbb01efebc0774957d489"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        // UI HELPERS
+        window.toggleMenu = () => document.getElementById('sidebar').classList.toggle('active');
+        window.toggleAuth = (type) => {
+            const l = document.getElementById('login-box');
+            const s = document.getElementById('signup-box');
+            if(type === 'signup'){ l.classList.add('hidden'); s.classList.remove('hidden'); }
+            else { s.classList.add('hidden'); l.classList.remove('hidden'); }
+        }
+        window.handleMenu = (type) => { toggleMenu(); toggleAuth(type); }
+
+        // REDIRECT FUNCTION
+        const goToDashboard = () => window.location.href = "dashboard.html";
+
+        // LOGIN LOGIC
+        window.login = async () => {
+            const email = document.getElementById('lemail').value;
+            const pass = document.getElementById('lpass').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                goToDashboard();
+            } catch (err) { Swal.fire("Error", "Check your credentials", "error"); }
+        }
+
+        // SIGNUP LOGIC
+        window.register = async () => {
+            const email = document.getElementById('semail').value;
+            const pass = document.getElementById('spass').value;
+            const fname = document.getElementById('fname').value;
+            const sname = document.getElementById('sname').value;
+            const wa = document.getElementById('whatsapp').value;
+
+            if(!fname || !wa) return Swal.fire("Missing", "Fill all fields", "warning");
+
+            try {
+                const res = await createUserWithEmailAndPassword(auth, email, pass);
+                // Save extra data to Firestore
+                await setDoc(doc(db, "users", res.user.uid), { 
+                    firstName: fname, surname: sname, whatsapp: wa, email: email, balance: 0, totalSpent: 0, totalOrders: 0 
+                });
+                Swal.fire("Welcome!", "Account Created!", "success").then(goToDashboard);
+            } catch (err) { Swal.fire("Error", err.message, "error"); }
+        }
+
+        // GOOGLE LOGIN LOGIC
+        window.loginWithGoogle = async () => {
+            try {
+                const res = await signInWithPopup(auth, provider);
+                // Save user data if new
+                await setDoc(doc(db, "users", res.user.uid), {
+                    firstName: res.user.displayName.split(' ')[0],
+                    email: res.user.email,
+                    balance: 0,
+                    totalSpent: 0,
+                    totalOrders: 0
+                }, { merge: true });
+                goToDashboard();
+            } catch (err) { console.error(err); }
+        }
+    </script>
+</body>
+</html>

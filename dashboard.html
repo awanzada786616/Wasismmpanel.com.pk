@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RichWay Elite | Premium Dashboard</title>
+    
+    <!-- Icons & Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --mint: #00e676;
+            --mint-dark: #00c853;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text-dark: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text-dark); padding-bottom: 80px; }
+
+        /* --- HEADER & SIDEBAR --- */
+        header {
+            background: #fff; padding: 12px 5%; display: flex; justify-content: space-between; 
+            align-items: center; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 1000;
+        }
+        .brand { font-size: 1.2rem; font-weight: 800; color: #3498db; display: flex; align-items: center; gap: 5px; }
+        .menu-btn { background: #e0e0e0; padding: 8px 12px; border-radius: 5px; color: var(--mint); cursor: pointer; border: none; font-size: 1.2rem; }
+
+        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #fff; z-index: 5000; transition: 0.4s; padding: 30px 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
+        .sidebar.active { left: 0; }
+        .side-item { display: flex; align-items: center; gap: 12px; padding: 15px; text-decoration: none; color: #555; font-weight: 600; border-radius: 10px; margin-bottom: 5px; cursor: pointer; }
+        .side-item:hover { background: #f0fff4; color: var(--mint); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 4500; display: none; backdrop-filter: blur(2px); }
+        .overlay.active { display: block; }
+
+        /* --- REALISTIC HANGING LIGHTS --- */
+        .lights-container {
+            width: 100%; height: 60px; display: flex; justify-content: space-around;
+            background: #fff; border-bottom: 1px solid #eee; position: relative; z-index: 999;
+        }
+        .bulb {
+            position: relative; width: 14px; height: 14px; border-radius: 50%;
+            margin-top: 25px; animation: swing 3s infinite alternate;
+            transform-origin: top center;
+        }
+        .bulb::before { content: ''; position: absolute; top: -25px; left: 50%; width: 1px; height: 25px; background: #222; }
+        .b-red { background: #ff4d4d; box-shadow: 0 0 15px #ff4d4d; }
+        .b-green { background: var(--mint); box-shadow: 0 0 15px var(--mint); }
+        .b-purple { background: #9b59b6; box-shadow: 0 0 15px #9b59b6; }
+        @keyframes swing { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+
+        /* --- ANNOUNCEMENT POPUP (CENTER) --- */
+        #ann-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 6000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .ann-card { background: #fff; width: 90%; max-width: 400px; border-radius: 20px; padding: 30px; text-align: center; position: relative; border-bottom: 6px solid var(--mint); }
+        .close-ann { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #aaa; }
+
+        /* --- STATS GRID (4 BOXES) --- */
+        .container { max-width: 650px; margin: 20px auto; padding: 0 15px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .stat-card { background: #fff; border-radius: 10px; border: 1px solid #ddd; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .stat-header { padding: 10px; font-size: 0.75rem; font-weight: 700; color: #666; background: #fafafa; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 6px; }
+        .stat-body { background: var(--mint); padding: 15px; color: #fff; font-weight: 800; font-size: 1rem; }
+
+        /* --- ORDER FORM --- */
+        .order-card { background: #fff; padding: 30px 25px; border-radius: 15px; border: 1px solid #eee; box-shadow: 0 10px 20px rgba(0,0,0,0.03); }
+        
+        /* Custom Dropdown (No Black Box) */
+        .custom-drop { position: relative; margin-bottom: 20px; }
+        .drop-head { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-size: 0.9rem; }
+        .drop-head img { width: 24px; height: 24px; border-radius: 4px; margin-right: 10px; object-fit: cover; }
+        .drop-content { position: absolute; top: 105%; width: 100%; background: #fff; border: 1px solid #ddd; border-radius: 10px; display: none; z-index: 100; max-height: 250px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .drop-opt { padding: 12px; display: flex; align-items: center; cursor: pointer; border-bottom: 1px solid #f9f9f9; }
+        .drop-opt:hover { background: #f0fdf4; }
+        .drop-opt img { width: 24px; height: 24px; border-radius: 4px; margin-right: 12px; }
+
+        /* Material Underline Inputs */
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; font-weight: 700; font-size: 0.8rem; color: #555; margin-bottom: 5px; }
+        .underline-in { border: none; border-bottom: 2px solid #ddd; width: 100%; padding: 10px 0; outline: none; font-size: 1rem; background: transparent; transition: 0.3s; }
+        .underline-in:focus { border-bottom-color: var(--mint); }
+
+        .avg-box { background: #f8fcf9; border: 1px solid #e0f2f1; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .submit-btn { width: 100%; padding: 18px; background: var(--mint); color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
+        
+        #wa-sticky { position: fixed; bottom: 25px; left: 25px; background: #25d366; color: white; padding: 15px; border-radius: 50%; font-size: 1.5rem; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); z-index: 1000; text-decoration: none; width: 60px; height: 60px; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+
+    <!-- ANNOUNCEMENT POPUP -->
+    <div id="ann-overlay">
+        <div class="ann-card">
+            <span class="close-ann" onclick="closeAnn()">&times;</span>
+            <i class="fas fa-bullhorn" style="font-size: 3rem; color: var(--mint); margin-bottom: 15px;"></i>
+            <h2 style="margin-bottom: 10px;">Elite Update</h2>
+            <p id="ann-text" style="color:#666; font-size: 0.9rem; line-height: 1.6;">...</p>
+            <button class="submit-btn" style="margin-top: 20px;" onclick="closeAnn()">Close</button>
+        </div>
+    </div>
+
+    <!-- SIDEBAR MENU -->
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <h2 style="color:var(--mint); margin-bottom:20px;">RichWay Menu</h2>
+        <div class="side-item" onclick="location.reload()"><i class="fas fa-plus-circle"></i> New Order</div>
+        <a href="history.html" class="side-item"><i class="fas fa-history"></i> History</a>
+        <a href="balance.html" class="side-item"><i class="fas fa-wallet"></i> Add Funds</a>
+        <div class="side-item" style="color:red; margin-top:30px;" onclick="logout()"><i class="fas fa-power-off"></i> Logout</div>
+    </div>
+
+    <header>
+        <div class="brand">RichWay SMM <i class="fas fa-check-circle"></i></div>
+        <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+    </header>
+
+    <div class="lights-container">
+        <div class="bulb b-red"></div><div class="bulb b-green"></div><div class="bulb b-purple"></div>
+        <div class="bulb b-red"></div><div class="bulb b-green"></div><div class="bulb b-purple"></div>
+        <div class="bulb b-red"></div><div class="bulb b-green"></div><div class="bulb b-purple"></div>
+    </div>
+
+    <div class="container">
+        <!-- 4 REAL-TIME STATS -->
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-header"><i class="fas fa-user"></i> Welcome Dear</div><div class="stat-body" id="u-name">...</div></div>
+            <div class="stat-card"><div class="stat-header"><i class="fas fa-shopping-bag"></i> Total Orders</div><div class="stat-body" id="u-orders">0</div></div>
+            <div class="stat-card"><div class="stat-header"><i class="fas fa-coins"></i> Total Spent</div><div class="stat-body" id="u-spent">Rs 0</div></div>
+            <div class="stat-card"><div class="stat-header"><i class="fas fa-wallet"></i> Your Balance</div><div class="stat-body" id="u-bal">Rs 0</div></div>
+        </div>
+
+        <div class="order-card">
+            <!-- Custom Dropdown -->
+            <label style="font-weight:700; font-size:0.75rem; color:gray;">CATEGORY</label>
+            <div class="custom-drop">
+                <div class="drop-head" onclick="toggleDrop()">
+                    <span><img id="sel-cat-img" src="https://cdn-icons-png.flaticon.com/512/174/174876.png"> <span id="sel-cat-name">-- Select Category --</span></span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="drop-content" id="catList"></div>
+            </div>
+
+            <div class="form-group">
+                <label>SERVICE</label>
+                <select id="serDrop" class="underline-in" style="font-size: 0.9rem;"><option value="">-- Choose Category First --</option></select>
+            </div>
+
+            <div class="avg-box">
+                <span style="font-weight:700; font-size:0.8rem;"><i class="fas fa-clock" style="color:var(--mint)"></i> AVERAGE TIME</span>
+                <p id="avgTime" style="margin-top:5px; color:#666; font-size:0.9rem;">Select a service</p>
+            </div>
+
+            <div class="form-group"><label>LINK</label><input type="text" class="underline-in" id="orderLink" placeholder="https://..."></div>
+            <div class="form-group"><label>QUANTITY</label><input type="number" class="underline-in" id="orderQty" placeholder="Min: 100"></div>
+            
+            <div class="form-group">
+                <label>CHARGE</label>
+                <div id="charge-txt" style="font-size:1.2rem; font-weight:800; color:#2c3e50;">≈ Rs 0.00</div>
+                <div style="height:2px; background:var(--mint); margin-top:5px;"></div>
+            </div>
+
+            <button class="submit-btn" onclick="placeOrder()">Place Order</button>
+        </div>
+    </div>
+
+    <a href="#" id="wa-sticky" target="_blank"><i class="fab fa-whatsapp"></i></a>
+
+    <!-- FIREBASE MODULES -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, collection, addDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // FIREBASE CONFIG
+        const firebaseConfig = { apiKey: "AIzaSyA44TLKBn93R8SxgmcVWAjr6wI3SQSTvM0", authDomain: "wasi-smm.firebaseapp.com", projectId: "wasi-smm", storageBucket: "wasi-smm.firebasestorage.app", messagingSenderId: "100481136940", appId: "1:100481136940:web:6dbb01efebc0774957d489" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let uData = {}, allSer = [], selSer = null;
+
+        window.toggleMenu = () => { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+        window.toggleDrop = () => { const list = document.getElementById('catList'); list.style.display = list.style.display === 'block' ? 'none' : 'block'; }
+        window.closeAnn = () => document.getElementById('ann-overlay').style.display = 'none';
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User Listener (Sync 4 boxes)
+                onSnapshot(doc(db, "users", user.uid), s => {
+                    if(s.exists()){
+                        uData = s.data();
+                        document.getElementById('u-name').innerText = uData.firstName || "Elite User";
+                        document.getElementById('u-bal').innerText = `Rs ${uData.balance.toLocaleString()}`;
+                    }
+                });
+
+                // Master Config Listener
+                onSnapshot(doc(db, "settings", "admin_config"), s => {
+                    if(s.exists()){
+                        const d = s.data();
+                        if(d.announcement) { document.getElementById('ann-text').innerText = d.announcement; document.getElementById('ann-overlay').style.display='flex'; }
+                        const wa = document.getElementById('wa-sticky');
+                        if(d.whatsappNumber) { wa.style.display='flex'; wa.href=`https://wa.me/${d.whatsappNumber}`; }
+                        document.getElementById('u-orders').innerText = d.isFakeActive ? d.fakeOrders : (uData.totalOrders || 0);
+                        document.getElementById('u-spent').innerText = `Rs ${d.isFakeActive ? d.fakeSpent : (uData.totalSpent || 0)}`;
+                    }
+                });
+
+                fetchServices();
+            } else { window.location.href = "index.html"; }
+        });
+
+        function fetchServices() {
+            onSnapshot(collection(db, "categories"), snap => {
+                const list = document.getElementById('catList'); list.innerHTML = "";
+                snap.forEach(d => {
+                    const cat = d.data();
+                    const div = document.createElement('div'); div.className="drop-opt";
+                    div.innerHTML = `<img src="${cat.image || ''}"> ${cat.name}`;
+                    div.onclick = () => {
+                        document.getElementById('sel-cat-name').innerText = cat.name;
+                        document.getElementById('sel-cat-img').src = cat.image;
+                        toggleDrop();
+                        loadServicesForCat(d.id);
+                    };
+                    list.appendChild(div);
+                });
+            });
+            onSnapshot(collection(db, "services"), snap => { allSer = snap.docs.map(d => ({id: d.id, ...d.data()})); });
+        }
+
+        function loadServicesForCat(catId) {
+            const drop = document.getElementById('serDrop');
+            drop.innerHTML = '<option value="">-- Choose Service --</option>';
+            allSer.filter(s => s.categoryId === catId).forEach(s => {
+                drop.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+            });
+        }
+
+        document.getElementById('serDrop').addEventListener('change', (e) => {
+            selSer = allSer.find(s => s.id === e.target.value);
+            if(selSer) document.getElementById('avgTime').innerText = selSer.averageTime || "Instant";
+        });
+
+        document.getElementById('orderQty').oninput = (e) => {
+            if(selSer && e.target.value > 0) {
+                const cost = (selSer.price / 1000) * e.target.value;
+                document.getElementById('charge-txt').innerText = `≈ Rs ${cost.toFixed(2)}`;
+            }
+        };
+
+        // --- FIXED PLACE ORDER (WITH REAL USERNAME) ---
+        window.placeOrder = async () => {
+            const link = document.getElementById('orderLink').value;
+            const qty = document.getElementById('orderQty').value;
+            if(!selSer || !link || !qty) return Swal.fire("Error", "Fill all fields", "error");
+            
+            const cost = (selSer.price / 1000) * qty;
+            if(uData.balance < cost) return Swal.fire("Low Balance", "Add funds first.", "error");
+            
+            try {
+                // userName fix here
+                const fullName = uData.firstName + " " + (uData.surname || "");
+                
+                await addDoc(collection(db, "orders"), { 
+                    uid: auth.currentUser.uid, 
+                    userName: fullName,
+                    serviceName: selSer.name, 
+                    link: link,
+                    quantity: parseInt(qty),
+                    amountPaid: cost, 
+                    status: "pending", 
+                    timestamp: new Date() 
+                });
+                
+                await updateDoc(doc(db, "users", auth.currentUser.uid), { 
+                    balance: increment(-cost), 
+                    totalSpent: increment(cost), 
+                    totalOrders: increment(1) 
+                });
+                
+                Swal.fire("Success", "Order Placed!", "success");
+            } catch(e) { console.error(e); }
+        }
+
+        window.logout = () => signOut(auth).then(() => window.location.href="index.html");
+    </script>
+</body>
+</html>
