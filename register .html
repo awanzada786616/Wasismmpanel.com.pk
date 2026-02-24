@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - SMM Panel Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">SMM Panel Pro</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="login.html" class="btn btn-secondary">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="form-container">
+        <h2 style="text-align: center; margin-bottom: 2rem;">Create Account</h2>
+        
+        <div id="alertContainer"></div>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" required placeholder="John Doe">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="john@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="••••••••" minlength="6">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" required placeholder="••••••••">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 1.5rem;">
+            Already have an account? <a href="login.html" style="color: var(--primary-color);">Login here</a>
+        </p>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

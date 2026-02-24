@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SMM Panel Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">SMM Panel Pro</div>
+            <div class="nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="#services">Services</a>
+                <a href="#orders">Orders</a>
+                <a href="#funds">Add Funds</a>
+                <a href="#api">API</a>
+                <span id="userEmail" style="color: var(--text-secondary);"></span>
+                <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Welcome Section -->
+        <div style="margin-bottom: 2rem;">
+            <h1 style="color: white;">Welcome back, <span id="userName"></span>!</h1>
+            <p style="color: rgba(255,255,255,0.8);">Manage your social media marketing campaigns</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="fas fa-wallet"></i></div>
+                <div class="stat-info">
+                    <h3>Balance</h3>
+                    <p id="userBalance">$0.00</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-shopping-cart"></i></div>
+                <div class="stat-info">
+                    <h3>Total Orders</h3>
+                    <p id="totalOrders">0</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-info">
+                    <h3>Completed</h3>
+                    <p id="completedOrders">0</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                <div class="stat-info">
+                    <h3>Pending</h3>
+                    <p id="pendingOrders">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Order Form -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1.5rem;">Place New Order</h2>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label for="service">Select Service</label>
+                    <select id="service" class="form-group input" required>
+                        <option value="">Choose a service...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="link">Link/Username</label>
+                    <input type="text" id="link" required placeholder="Enter Instagram username or video link">
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity">Quantity</label>
+                    <input type="number" id="quantity" required min="1" value="100">
+                </div>
+                
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <button type="submit" class="btn btn-primary">Place Order</button>
+                    <span id="orderPrice" style="font-weight: 600;">Total: $0.00</span>
+                </div>
+            </form>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem;">Recent Orders</h2>
+            <div class="table-container">
+                <table id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Service</th>
+                            <th>Link</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersList">
+                        <tr>
+                            <td colspan="7" style="text-align: center;">Loading orders...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- API Integration Section -->
+        <div class="card" style="margin-top: 2rem;">
+            <h2 style="margin-bottom: 1.5rem;">API Integration</h2>
+            <div style="background: var(--light-bg); padding: 1.5rem; border-radius: 8px;">
+                <h3 style="margin-bottom: 1rem;">Your API Key</h3>
+                <div style="display: flex; gap: 1rem;">
+                    <input type="text" id="apiKey" readonly value="Loading..." style="flex: 1; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <button class="btn btn-secondary" onclick="copyAPIKey()">Copy</button>
+                    <button class="btn btn-primary" onclick="regenerateAPIKey()">Regenerate</button>
+                </div>
+                
+                <h3 style="margin: 2rem 0 1rem;">API Documentation</h3>
+                <pre style="background: var(--dark-bg); color: white; padding: 1rem; border-radius: 8px; overflow-x: auto;">
+// Example API Request
+fetch('https://api.smmpanelpro.com/v1/order', {
+    method: 'POST',
+    headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        service_id: 1,
+        link: 'https://instagram.com/username',
+        quantity: 100
+    })
+})</pre>
+            </div>
+        </div>
+
+        <!-- Payment Integration Section (Dummy) -->
+        <div class="card" style="margin-top: 2rem;">
+            <h2 style="margin-bottom: 1.5rem;">Add Funds</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div class="service-card" style="text-align: center;">
+                    <i class="fas fa-credit-card" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                    <h3 style="margin-bottom: 0.5rem;">Credit Card</h3>
+                    <button class="btn btn-secondary" style="width: 100%;" onclick="showDummyPayment()">Pay Now</button>
+                </div>
+                
+                <div class="service-card" style="text-align: center;">
+                    <i class="fab fa-paypal" style="font-size: 2rem; color: #003087; margin-bottom: 1rem;"></i>
+                    <h3 style="margin-bottom: 0.5rem;">PayPal</h3>
+                    <button class="btn btn-secondary" style="width: 100%;" onclick="showDummyPayment()">Pay Now</button>
+                </div>
+                
+                <div class="service-card" style="text-align: center;">
+                    <i class="fab fa-bitcoin" style="font-size: 2rem; color: #f7931a; margin-bottom: 1rem;"></i>
+                    <h3 style="margin-bottom: 0.5rem;">Cryptocurrency</h3>
+                    <button class="btn btn-secondary" style="width: 100%;" onclick="showDummyPayment()">Pay Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dummy Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 1.5rem;">Dummy Payment Gateway</h2>
+            <p style="margin-bottom: 1.5rem;">This is a placeholder for payment integration. In a real application, you would integrate with actual payment providers like Stripe, PayPal, etc.</p>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closePaymentModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="simulatePayment()">Simulate Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

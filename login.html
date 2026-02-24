@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SMM Panel Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">SMM Panel Pro</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="register.html" class="btn btn-primary">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="form-container">
+        <h2 style="text-align: center; margin-bottom: 2rem;">Welcome Back</h2>
+        
+        <div id="alertContainer"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="john@example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 1.5rem;">
+            Don't have an account? <a href="register.html" style="color: var(--primary-color);">Register here</a>
+        </p>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
