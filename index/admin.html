@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - SMM Panel Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">SMM Panel Pro Admin</div>
+            <div class="nav-links">
+                <a href="#dashboard">Dashboard</a>
+                <a href="#users">Users</a>
+                <a href="#services">Services</a>
+                <a href="#orders">Orders</a>
+                <a href="#settings">Settings</a>
+                <span id="adminEmail"></span>
+                <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Admin Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                <div class="stat-info">
+                    <h3>Total Users</h3>
+                    <p id="totalUsers">0</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-shopping-cart"></i></div>
+                <div class="stat-info">
+                    <h3>Total Orders</h3>
+                    <p id="totalOrders">0</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="fas fa-dollar-sign"></i></div>
+                <div class="stat-info">
+                    <h3>Total Revenue</h3>
+                    <p id="totalRevenue">$0</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                <div class="stat-info">
+                    <h3>Pending Orders</h3>
+                    <p id="pendingOrders">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div style="margin: 2rem 0;">
+            <button class="btn btn-primary" onclick="showTab('users')">Users Management</button>
+            <button class="btn btn-secondary" onclick="showTab('services')">Services Management</button>
+            <button class="btn btn-secondary" onclick="showTab('orders')">Orders Management</button>
+        </div>
+
+        <!-- Users Management Tab -->
+        <div id="usersTab" class="card" style="display: block;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2>Users Management</h2>
+                <button class="btn btn-primary" onclick="showAddUserModal()">Add New User</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Balance</th>
+                            <th>Orders</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersList">
+                        <tr>
+                            <td colspan="7" style="text-align: center;">Loading users...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Services Management Tab -->
+        <div id="servicesTab" class="card" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2>Services Management</h2>
+                <button class="btn btn-primary" onclick="showAddServiceModal()">Add New Service</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Service Name</th>
+                            <th>Category</th>
+                            <th>Price per 1000</th>
+                            <th>Min Order</th>
+                            <th>Max Order</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="servicesList">
+                        <tr>
+                            <td colspan="8" style="text-align: center;">Loading services...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Orders Management Tab -->
+        <div id="ordersTab" class="card" style="display: none;">
+            <h2 style="margin-bottom: 1.5rem;">Orders Management</h2>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>User</th>
+                            <th>Service</th>
+                            <th>Link</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersList">
+                        <tr>
+                            <td colspan="9" style="text-align: center;">Loading orders...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 1.5rem;">Add New User</h2>
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label for="userName">Full Name</label>
+                    <input type="text" id="userName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userEmail">Email</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userPassword">Password</label>
+                    <input type="password" id="userPassword" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userBalance">Initial Balance</label>
+                    <input type="number" id="userBalance" value="0" min="0" step="0.01">
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddUserModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Service Modal -->
+    <div id="addServiceModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 1.5rem;">Add New Service</h2>
+            <form id="addServiceForm">
+                <div class="form-group">
+                    <label for="serviceName">Service Name</label>
+                    <input type="text" id="serviceName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="serviceCategory">Category</label>
+                    <select id="serviceCategory" required>
+                        <option value="instagram">Instagram</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="twitter">Twitter</option>
+                        <option value="tiktok">TikTok</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="servicePrice">Price per 1000</label>
+                    <input type="number" id="servicePrice" required min="0" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="serviceMin">Min Order</label>
+                    <input type="number" id="serviceMin" required min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="serviceMax">Max Order</label>
+                    <input type="number" id="serviceMax" required min="1">
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddServiceModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Service</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
